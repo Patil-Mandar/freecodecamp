@@ -1,8 +1,22 @@
-<div class="navbar-nav ms-auto">
-    <% if(!currentUser){ %> 
-    <a class="nav-link" href="/signIn">LogIn</a>
-    <a class="nav-link" href="/signUp">Sign Up</a>
-    <% }else{ %> 
-    <a class="nav-link" href="/signOut">Log Out</a>
-    <% } %> 
-  </div>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top py-0">    <!-- sticky-top -->
+    <div class="row container-fluid mx-0 px-1">
+        <div class="col me-auto">
+            <input class=" w-75" type="text" placeholder="&#128269 search 8,000+ tutorials">
+        </div>
+        <div class="col">
+            <div class="text-center" height="10">
+                <a class="navbar-brand" href="/#"><img  height="20" src="https://d33wubrfki0l68.cloudfront.net/52edd2dfddbec5db22a65dba39951af8fa9bdff6/006f7/img/fcc_primary_large.svg"></a>
+            </div>
+            </div>
+        <div class="col">
+            <div class="navbar-nav justify-content-end">
+                <a class="nav-link py-1 my-1 btn btn-outline-light text-light me-2 rounded-0" href="/#">Menu</a>
+                <% if(!currentUser){ %> 
+                    <a class="nav-link py-1 my-1 btn-outline-warning btn btn-warning text-dark rounded-0" href="/signIn">Sign In</a>
+                <% }else{ %> 
+                    <a class="nav-link py-1 my-1 btn-outline-danger btn btn-danger text-light rounded-0" href="/signOut">Sign Out</a>
+                <% } %> 
+            </div>
+        </div>
+    </div>
+</nav>

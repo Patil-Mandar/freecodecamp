@@ -1,9 +1,11 @@
+require('dotenv').config()
 const express = require('express')
 const path = require('path')
 const ejsMate = require('ejs-mate')
 const mongoose = require('mongoose')
 const passport = require('passport')
 const LocalStrategy = require('passport-local')
+const GoogleStrategy = require( 'passport-google-oauth2' ).Strategy;
 const session = require('express-session')
 const MongoStore = require('connect-mongo')
 const flash = require('connect-flash')
@@ -53,7 +55,23 @@ app.use(flash())
 app.use(passport.initialize())
 app.use(passport.session())
 passport.use(new LocalStrategy(User.authenticate()))
-
+passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: process.env.GOOGLE_CALLBACK_URL
+},
+    async function (accessToken, refreshToken, profile, cb) {
+        await User.findOrCreate(
+            {
+                googleId: profile.id,
+                name: profile.displayName,
+                username: profile.emails[0].value
+            },
+            function (err, user) {
+                return cb(err, user);
+            })
+    }
+))
 passport.serializeUser(User.serializeUser())
 passport.deserializeUser(User.deserializeUser())
 
@@ -74,6 +92,16 @@ app.post('/signIn',passport.authenticate('local',{failureFlash:true,failureRedir
     const returnToUrl = '/'
     req.flash('success','Welcome back!!')
     res.redirect(returnToUrl)
+})
+
+app.get('/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] })
+)
+
+app.get('/google/callback',
+  passport.authenticate('google', { failureRedirect: '/' }),(req, res) => {
+    req.flash('success', 'LogedIn Successfully!')
+    res.redirect('/courses');
 })
 
 app.get('/signUp',(req,res)=>{

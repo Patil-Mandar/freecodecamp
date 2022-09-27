@@ -7,12 +7,13 @@ const passport = require('passport')
 const LocalStrategy = require('passport-local')
 const GoogleStrategy = require( 'passport-google-oauth2' ).Strategy;
 const session = require('express-session')
-const MongoStore = require('connect-mongo')
 const flash = require('connect-flash')
 
 
 const User = require('./models/users.js')
-
+const ExpressError = require('./utils/expressError.js')
+const users = require('./controllers/users.js')
+const {renderCourses,renderHomePage} = require('./controllers/index.js')
 
 mongoose.connect('mongodb://localhost:27017/Freecodecamp')    
     .then(data => console.log("Database connected"))
@@ -24,14 +25,6 @@ app.engine('ejs',ejsMate)
 app.set('view engine','ejs')
 app.set('views',path.join(__dirname,'views'))
 
-// const store = MongoStore.create({
-//     mongoUrl: 'mongodb://localhost:27017/Freecodecamp',
-//     secret:'Dont look here its a secret',
-//     touchAfter: 24*60*60
-// })
-// store.on('error',e => {
-//     console.log('Session Error!!!',e)
-// })
 
 app.use(express.urlencoded({ extended: true }))
 
@@ -84,60 +77,36 @@ app.use((req,res,next)=>{
     next()
 })
 
-app.get('/signIn',(req,res)=>{
-    res.render('signIn')
-})
-
-app.post('/signIn',passport.authenticate('local',{failureFlash:true,failureRedirect:'/signIn'}),(req,res)=>{
-    const returnToUrl = '/'
-    req.flash('success','Welcome back!!')
-    res.redirect(returnToUrl)
-})
-
 app.get('/google',
   passport.authenticate('google', { scope: ['profile', 'email'] })
 )
-
 app.get('/google/callback',
   passport.authenticate('google', { failureRedirect: '/' }),(req, res) => {
     req.flash('success', 'LogedIn Successfully!')
     res.redirect('/courses');
 })
 
-app.get('/signUp',(req,res)=>{
-    res.render('signUp')
+app.get('/signIn',users.renderSignInPage)
+app.post('/signIn',passport.authenticate('local',{failureFlash:true,failureRedirect:'/signIn'}),users.signIn)
+
+app.get('/signUp',users.renderSignUpPage)
+app.post('/signUp', users.signUp)
+
+app.get('/signOut', users.signout)
+
+app.get('/courses',renderCourses)
+
+app.get('/', renderHomePage)
+
+app.all('*',(req,res)=>{
+    throw new ExpressError(`Page not found`,404)
 })
 
-app.get('/signOut', (req,res)=>{
-    req.logout(function(err) {
-        if (err) { console.log(err) }
-        res.redirect('/');
-    });
-})
-
-app.post('/signUp',async (req,res)=>{
-    try {
-        const { username, name, password } = req.body   //here username is email
-        const user = new User({ username, name })
-        const registeredUser = await User.register(user, password)
-        req.login(registeredUser, err => {
-            if (err) return next(err)
-            req.flash('success', 'Registered Successfully!')
-            res.redirect('/courses')
-        })
-    } catch (e) {
-        console.log(e)
-        req.flash('error', e.message)
-        res.redirect('/signUp')
-    }
-})
-
-app.get('/courses',(req,res)=>{
-    res.render('courses')
-})
-
-app.get('/',(req,res)=>{
-    res.render('home')
+//Basic error handler
+app.use((err,req,res,next)=>{
+    const {statusCode=500} = err   //gave some default values
+    if(!err.message) err.message = "Something went wrong"
+    res.status(statusCode).render('error',{err})
 })
 
 const port = process.env.PORT || '3000'

@@ -1,3 +1,7 @@
 <% layout('/layouts/boilerplate')  %> 
 
 <h1>Courses page</h1>
+
+<% for(let course of courses){ %>
+    <p><b><%= course.title %></b>  Duration:<%= course.title %> hr(s)</p>
+<% } %>

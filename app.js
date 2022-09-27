@@ -14,6 +14,7 @@ const User = require('./models/users.js')
 const ExpressError = require('./utils/expressError.js')
 const users = require('./controllers/users.js')
 const {renderCourses,renderHomePage} = require('./controllers/index.js')
+const {isLogedIn} = require('./middleware')
 
 mongoose.connect('mongodb://localhost:27017/Freecodecamp')    
     .then(data => console.log("Database connected"))
@@ -94,7 +95,7 @@ app.post('/signUp', users.signUp)
 
 app.get('/signOut', users.signout)
 
-app.get('/courses',renderCourses)
+app.get('/courses',isLogedIn,renderCourses)
 
 app.get('/', renderHomePage)
 

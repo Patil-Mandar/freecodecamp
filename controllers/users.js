@@ -6,7 +6,7 @@ module.exports.renderSignInPage = (req,res)=>{
 }
 
 module.exports.signIn = (req,res)=>{
-    const returnToUrl = '/'
+    const returnToUrl = '/courses'
     req.flash('success','Welcome back!!')
     res.redirect(returnToUrl)
 }

@@ -57,28 +57,49 @@ passport.use(new LocalStrategy(User.authenticate()))
 passport.serializeUser(User.serializeUser())
 passport.deserializeUser(User.deserializeUser())
 
+//middleware for flashing all msg
+app.use((req,res,next)=>{
+    res.locals.currentUser = req.user
+    res.locals.success = req.flash('success')       //this will send success to all the rendering requests
+    res.locals.warning = req.flash('warning')
+    res.locals.error = req.flash('error')
+    next()
+})
+
 app.get('/signIn',(req,res)=>{
     res.render('signIn')
+})
+
+app.post('/signIn',passport.authenticate('local',{failureFlash:true,failureRedirect:'/signIn'}),(req,res)=>{
+    const returnToUrl = '/'
+    req.flash('success','Welcome back!!')
+    res.redirect(returnToUrl)
 })
 
 app.get('/signUp',(req,res)=>{
     res.render('signUp')
 })
 
+app.get('/signOut', (req,res)=>{
+    req.logout(function(err) {
+        if (err) { console.log(err) }
+        res.redirect('/');
+    });
+})
+
 app.post('/signUp',async (req,res)=>{
     try {
         const { username, name, password } = req.body   //here username is email
-        console.log(req.body)
         const user = new User({ username, name })
         const registeredUser = await User.register(user, password)
         req.login(registeredUser, err => {
             if (err) return next(err)
-            // req.flash('success', 'Registered Successfully!')
+            req.flash('success', 'Registered Successfully!')
             res.redirect('/courses')
         })
     } catch (e) {
         console.log(e)
-        // req.flash('error', e.message)
+        req.flash('error', e.message)
         res.redirect('/signUp')
     }
 })

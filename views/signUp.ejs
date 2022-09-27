@@ -1,14 +1,35 @@
 <% layout('/layouts/boilerplate')  %> 
 
-<h1>Sign Up Page</h1>
+<div class="container mt-3">
+    <div class="row">
+        <div class="col-md-6 offset-md-3  col-xl-4 offset-xl-4">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h4 class="card-title">Sign In</h4>
+                    <form class="form" action="/signUp" method="post">
+                        <div class="mb-3">
+                            <label class="form-label" for="username">Name</label>
+                            <input class="form-control" type="text" id="name" name="name" required autofocus>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="username">Email ID</label>
+                            <input class="form-control" type="text" id="username" name="username" required autofocus>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="password">Password</label>
+                            <input class="form-control" type="password" id="password" name="password" required>
+                        </div>
+                        <button class="btn btn-success w-100">Sign Up</button>
+                        <a class="btn btn-danger w-100 mt-2" href="/google"><b>Google</b> Sign Up</a>
 
-<form action="" method="POST">
-    <input type="text" name="name" placeholder="Name">
-    <input type="email" name="username" id="" placeholder="Email ID"> 
-    <!-- passing email as username because passport package consider username to be unquie -->
-    <input type="password" name="password" id="" placeholder="Password">
-    <button>Sign Up</button>
-</form>
+                    </form>
+                </div>
+            </div>
+            <div class="text-center mt-2">
+                <p class="d-inline">Already SignUp?</p>
+                <a class="d-inline" href="/signIn">Sign In</a>
+            </div>
+        </div>
+    </div>
 
-<h3>Already Registered</h3>
-<a href="/signIn">Sign In</a>
+

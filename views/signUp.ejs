@@ -1,0 +1,14 @@
+<% layout('/layouts/boilerplate')  %> 
+
+<h1>Sign Up Page</h1>
+
+<form action="" method="POST">
+    <input type="text" name="name" placeholder="Name">
+    <input type="email" name="username" id="" placeholder="Email ID"> 
+    <!-- passing email as username because passport package consider username to be unquie -->
+    <input type="password" name="password" id="" placeholder="Password">
+    <button>Sign Up</button>
+</form>
+
+<h3>Already Registered</h3>
+<a href="/signIn">Sign In</a>
